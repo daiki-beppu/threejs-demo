@@ -33,7 +33,7 @@ export default function Home() {
       );
       camera.position.x = 0;
       camera.position.y = 0;
-      camera.position.z = 2;
+      camera.position.z = 3;
       scene.add(camera);
 
       // Renderer
@@ -49,7 +49,7 @@ export default function Home() {
 
         //Rotete the mesh
         mesh.rotation.x += 0.02;
-        mesh.rotation.y += 0.01;
+        mesh.rotation.y += 0.025;
 
         renderer.render(scene, camera);
       };
