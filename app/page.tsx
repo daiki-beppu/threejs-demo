@@ -16,7 +16,7 @@ export default function Home() {
 
       // Object
       const geometry = new THREE.BoxGeometry(1, 1, 1);
-      const material = new THREE.MeshBasicMaterial({ color: "red" });
+      const material = new THREE.MeshBasicMaterial({ color: "#F87171" });
       const mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
 
@@ -32,21 +32,35 @@ export default function Home() {
         sizes.width / sizes.height
       );
       camera.position.x = 0;
-      camera.position.y = 0.25;
+      camera.position.y = 0;
       camera.position.z = 2;
       scene.add(camera);
 
       // Renderer
       const renderer = new THREE.WebGLRenderer({
         canvas: canvas,
+        alpha: true,
       });
       renderer.setSize(sizes.width, sizes.height);
-      renderer.render(scene, camera);
+
+      // animetion loop
+      const animetion = () => {
+        requestAnimationFrame(animetion);
+
+        //Rotete the mesh
+        mesh.rotation.x += 0.02;
+        mesh.rotation.y += 0.01;
+
+        renderer.render(scene, camera);
+      };
+      animetion();
     }
   }, []);
 
   return (
-    <canvas ref={canvasRef} className="w-[800px] h-[600px]">
-    </canvas>
+    <canvas
+      ref={canvasRef}
+      className="w-[800px] h-[600px] bg-blue-400"
+    ></canvas>
   );
 }
