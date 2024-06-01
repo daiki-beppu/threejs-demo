@@ -15,15 +15,35 @@ export default function Home() {
       const scene = new THREE.Scene();
 
       // Object
-      const geometry = new THREE.BoxGeometry(1, 1, 1);
-      const material = new THREE.MeshBasicMaterial({ color: "#F87171" });
-      const mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
+
+      const boxGroup = new THREE.Group();
+      scene.add(boxGroup);
+
+      const redBox = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        new THREE.MeshBasicMaterial({ color: "#F87171" })
+      );
+      redBox.position.set(0, 0, 0);
+      boxGroup.add(redBox);
+
+      const blueBox = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        new THREE.MeshBasicMaterial({ color: "#60A5FA" })
+      );
+      blueBox.position.set(2, 0, 0);
+      boxGroup.add(blueBox);
+
+      const greenBox = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        new THREE.MeshBasicMaterial({ color: "#4AE480" })
+      );
+      greenBox.position.set(-2, 0, 0);
+      boxGroup.add(greenBox);
 
       // Sizes
       const sizes = {
-        width: 800,
-        height: 600,
+        width: 1000,
+        height: 800,
       };
 
       // Camera
@@ -33,7 +53,7 @@ export default function Home() {
       );
       camera.position.x = 0;
       camera.position.y = 0;
-      camera.position.z = 3;
+      camera.position.z = 10;
       scene.add(camera);
 
       // Renderer
@@ -48,8 +68,8 @@ export default function Home() {
         requestAnimationFrame(animetion);
 
         //Rotete the mesh
-        mesh.rotation.x += 0.02;
-        mesh.rotation.y += 0.025;
+        boxGroup.rotation.x += 0.02;
+        boxGroup.rotation.y += 0.01;
 
         renderer.render(scene, camera);
       };
@@ -60,7 +80,7 @@ export default function Home() {
   return (
     <canvas
       ref={canvasRef}
-      className="w-[800px] h-[600px] bg-blue-400"
+      className="w-[800px] h-[600px] bg-orange-300/65"
     ></canvas>
   );
 }
