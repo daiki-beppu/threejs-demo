@@ -63,11 +63,11 @@ export default function Home() {
       });
       renderer.setSize(sizes.width, sizes.height);
 
-      // animetion loop
+      // ループアニメーション
       const animetion = () => {
         requestAnimationFrame(animetion);
 
-        //Rotete the mesh
+        //boxGroupを回転
         boxGroup.rotation.x += 0.02;
         boxGroup.rotation.y += 0.01;
 
