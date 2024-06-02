@@ -1,7 +1,9 @@
 "use client";
 
+import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -19,26 +21,26 @@ export default function Home() {
       const boxGroup = new THREE.Group();
       scene.add(boxGroup);
 
-      const redBox = new THREE.Mesh(
+      const centerBox = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
         new THREE.MeshBasicMaterial({ color: "#F87171" })
       );
-      redBox.position.set(0, 0, 0);
-      boxGroup.add(redBox);
+      centerBox.position.set(0, 0, 0);
+      boxGroup.add(centerBox);
 
-      const blueBox = new THREE.Mesh(
+      const rightBox = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
         new THREE.MeshBasicMaterial({ color: "#60A5FA" })
       );
-      blueBox.position.set(2, 0, 0);
-      boxGroup.add(blueBox);
+      rightBox.position.set(2, 0, 0);
+      boxGroup.add(rightBox);
 
-      const greenBox = new THREE.Mesh(
+      const leftBox = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
         new THREE.MeshBasicMaterial({ color: "#4AE480" })
       );
-      greenBox.position.set(-2, 0, 0);
-      boxGroup.add(greenBox);
+      leftBox.position.set(-2, 0, 0);
+      boxGroup.add(leftBox);
 
       // Sizes
       const sizes = {
@@ -53,8 +55,11 @@ export default function Home() {
       );
       camera.position.x = 0;
       camera.position.y = 0;
-      camera.position.z = 10;
+      camera.position.z = 5;
       scene.add(camera);
+
+      // Contorols
+      const controls = new OrbitControls(camera, canvas);
 
       // Renderer
       const renderer = new THREE.WebGLRenderer({
@@ -63,15 +68,30 @@ export default function Home() {
       });
       renderer.setSize(sizes.width, sizes.height);
 
+      // gsap
+      const tl = gsap.timeline();
+      tl.to(boxGroup.position, { x: 1 })
+        .to(boxGroup.rotation, { x: Math.PI })
+        .to(boxGroup.position, { y: -2 })
+        .to(boxGroup.rotation, { y: Math.PI, x: Math.PI })
+        .to(boxGroup.position, { x: -1.5 })
+        .to(boxGroup.rotation, { x: -Math.PI })
+        .to(boxGroup.position, { y: 2 })
+        .to(boxGroup.rotation, { y: -Math.PI, x: -Math.PI })
+        .to(boxGroup.position, { x: 1.5 })
+        .to(boxGroup.rotation, { x: Math.PI })
+        .to(boxGroup.position, { y: -0.5 })
+        .to(boxGroup.rotation, { y: Math.PI, x: -Math.PI })
+        .to(boxGroup.position, { x: -0.25 })
+        .delay(1)
+        .repeat(-1);
+
       // ループアニメーション
       const animetion = () => {
-        requestAnimationFrame(animetion);
-
-        //boxGroupを回転
-        boxGroup.rotation.x += 0.02;
-        boxGroup.rotation.y += 0.01;
-
+        controls.update();
+        camera.lookAt(boxGroup.position);
         renderer.render(scene, camera);
+        requestAnimationFrame(animetion);
       };
       animetion();
     }
