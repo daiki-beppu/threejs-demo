@@ -44,9 +44,32 @@ export default function Home() {
 
       // Sizes
       const sizes = {
-        width: 1000,
-        height: 800,
+        width: window.innerWidth,
+        height: window.innerHeight,
       };
+
+      window.addEventListener("resize", () => {
+        // サイズの更新
+        sizes.width = window.innerWidth;
+        sizes.height = window.innerHeight;
+        ``;
+        // カメラの更新
+        camera.aspect = sizes.width / sizes.height;
+        camera.updateProjectionMatrix();
+
+        // レンダラーの更新
+        renderer.setSize(sizes.width, sizes.height);
+
+        // ピクセル比を指定
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      });
+
+      // Fullscreen
+      window.addEventListener("dblclick", async () => {
+        !document.fullscreenElement
+          ? await canvas.requestFullscreen()
+          : await document.exitFullscreen();
+      });
 
       // Camera
       const camera = new THREE.PerspectiveCamera(
@@ -67,6 +90,7 @@ export default function Home() {
         alpha: true,
       });
       renderer.setSize(sizes.width, sizes.height);
+      renderer.setClearColor("#93C5FD");
 
       // gsap
       const tl = gsap.timeline();
@@ -97,10 +121,5 @@ export default function Home() {
     }
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="w-[800px] h-[600px] bg-orange-300/65"
-    ></canvas>
-  );
+  return <canvas ref={canvasRef} className=""></canvas>;
 }
