@@ -43,13 +43,69 @@ export default function Home() {
       leftBox.position.set(-2, 0, 0);
       boxGroup.add(leftBox);
 
+      // lil-gui
+      const gui = new GUI({
+        width: 400,
+        title: "デバッグUI",
+        closeFolders: true,
+      });
+
+      // デバッグUIの表示切り替え
+      window.addEventListener("keydown", (event) => {
+        event.key === "," ? gui.show(gui._hidden) : "";
+      });
+
+      const debugObject = {
+        scale: 1,
+        spin: () => {
+          gsap.to(boxGroup.rotation, {
+            duration: 1,
+            x: boxGroup.rotation.x + Math.PI * 2,
+          });
+        },
+      };
+
+      const boxFolder = gui.addFolder("BOX");
+
+      const visibleFolder = boxFolder.addFolder("BOX表示");
+      visibleFolder.add(leftBox, "visible").name("左のBOX");
+      visibleFolder.add(centerBox, "visible").name("中央BOX");
+      visibleFolder.add(rightBox, "visible").name("右のBOX");
+
+      const wireframeFolder = boxFolder.addFolder("ワイヤーフレーム");
+      wireframeFolder.add(leftBox.material, "wireframe").name("左のBOX");
+      wireframeFolder.add(centerBox.material, "wireframe").name("中央BOX");
+      wireframeFolder.add(rightBox.material, "wireframe").name("右のBOX");
+
+      const animationFolder = boxFolder.addFolder("アニメーション");
+      animationFolder.add(debugObject, "spin");
+
+      boxFolder
+        .add(debugObject, "scale")
+        .min(1)
+        .max(3)
+        .step(0.001)
+        .name("大きさの変更")
+        .onChange(() => {
+          boxGroup.scale.set(
+            debugObject.scale,
+            debugObject.scale,
+            debugObject.scale
+          );
+        });
+
+      const colorFolder = boxFolder.addFolder("BOXカラー");
+      colorFolder.addColor(leftBox.material, "color").name("左のBOXカラー");
+      colorFolder.addColor(centerBox.material, "color").name("中央BOXカラー");
+      colorFolder.addColor(rightBox.material, "color").name("右のBOXカラー");
+
       // Sizes
       const sizes = {
         width: window.innerWidth,
         height: window.innerHeight,
       };
 
-      window.addEventListener("resize", () => {
+      const handleResize = () => {
         // サイズの更新
         sizes.width = window.innerWidth;
         sizes.height = window.innerHeight;
@@ -63,14 +119,16 @@ export default function Home() {
 
         // ピクセル比を指定
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      });
+      };
+      window.addEventListener("resize", handleResize);
 
       // Fullscreen
-      window.addEventListener("dblclick", async () => {
-        !document.fullscreenElement
-          ? await canvas.requestFullscreen()
-          : await document.exitFullscreen();
-      });
+      // const handleDbulclick = () => {
+      //   !document.fullscreenElement
+      //     ? canvas.requestFullscreen()
+      //     : document.exitFullscreen();
+      // };
+      // window.addEventListener("dblclick", handleDbulclick);
 
       // Camera
       const camera = new THREE.PerspectiveCamera(
@@ -88,28 +146,10 @@ export default function Home() {
       // Renderer
       const renderer = new THREE.WebGLRenderer({
         canvas: canvas,
-        alpha: true,
+        // alpha: true,
       });
       renderer.setSize(sizes.width, sizes.height);
       renderer.setClearColor("#93C5FD");
-
-      // gsap
-      const tl = gsap.timeline();
-      tl.to(boxGroup.position, { x: 1 })
-        .to(boxGroup.rotation, { x: Math.PI })
-        .to(boxGroup.position, { y: -2 })
-        .to(boxGroup.rotation, { y: Math.PI, x: Math.PI })
-        .to(boxGroup.position, { x: -1.5 })
-        .to(boxGroup.rotation, { x: -Math.PI })
-        .to(boxGroup.position, { y: 2 })
-        .to(boxGroup.rotation, { y: -Math.PI, x: -Math.PI })
-        .to(boxGroup.position, { x: 1.5 })
-        .to(boxGroup.rotation, { x: Math.PI })
-        .to(boxGroup.position, { y: -0.5 })
-        .to(boxGroup.rotation, { y: Math.PI, x: -Math.PI })
-        .to(boxGroup.position, { x: -0.25 })
-        .delay(1)
-        .repeat(-1);
 
       // ループアニメーション
       const animetion = () => {
@@ -119,6 +159,12 @@ export default function Home() {
         requestAnimationFrame(animetion);
       };
       animetion();
+
+      return () => {
+        gui.destroy();
+        window.removeEventListener("resize", handleResize);
+        // window.removeEventListener("dblclick", handleDbulclick);
+      };
     }
   }, []);
 
