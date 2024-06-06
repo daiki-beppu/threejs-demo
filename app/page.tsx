@@ -17,6 +17,31 @@ export default function Home() {
       // Scene
       const scene = new THREE.Scene();
 
+      // Textuer
+      const loadingManager = new THREE.LoadingManager();
+
+      loadingManager.onLoad = () => {
+        console.log("lodad");
+      };
+
+      loadingManager.onError = (url) => {
+        console.log("error");
+      };
+
+      const textureLoader = new THREE.TextureLoader(loadingManager);
+
+      const centerBoxTexture = textureLoader.load(
+        "/QuartziteDenali002_COL_8K_METALNESS.png"
+      );
+      const leftBoxTexture = textureLoader.load(
+        "/VeneerWhiteOakRandomMatched001_COL_1K_METALNESS.png"
+      );
+      leftBoxTexture.magFilter = THREE.NearestFilter;
+      const rightBoxTexture = textureLoader.load(
+        "/VeneerWhiteOakRandomMatched001_COL_1K_METALNESS.png"
+      );
+      rightBoxTexture.minFilter = THREE.NearestFilter;
+
       // Object
 
       const boxGroup = new THREE.Group();
@@ -24,21 +49,21 @@ export default function Home() {
 
       const centerBox = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshBasicMaterial({ color: "#F87171" })
+        new THREE.MeshBasicMaterial({ map: centerBoxTexture })
       );
       centerBox.position.set(0, 0, 0);
       boxGroup.add(centerBox);
 
       const rightBox = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshBasicMaterial({ color: "#60A5FA" })
+        new THREE.MeshBasicMaterial({ map: rightBoxTexture })
       );
       rightBox.position.set(2, 0, 0);
       boxGroup.add(rightBox);
 
       const leftBox = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshBasicMaterial({ color: "#4AE480" })
+        new THREE.MeshBasicMaterial({ map: leftBoxTexture })
       );
       leftBox.position.set(-2, 0, 0);
       boxGroup.add(leftBox);
