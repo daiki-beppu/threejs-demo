@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import GUI from "lil-gui";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,58 +18,57 @@ export default function Home() {
       // Scene
       const scene = new THREE.Scene();
 
-      // Textuer
+      // テクスチャ
       const loadingManager = new THREE.LoadingManager();
 
       loadingManager.onLoad = () => {
-        console.log("lodad");
+        console.log("ロード中");
       };
 
-      loadingManager.onError = (url) => {
-        console.log("error");
+      loadingManager.onProgress = () => {
+        console.log("ロード完了");
+      };
+
+      loadingManager.onError = () => {
+        console.log("エラー");
       };
 
       const textureLoader = new THREE.TextureLoader(loadingManager);
 
-      const centerBoxTexture = textureLoader.load(
-        "/QuartziteDenali002_COL_8K_METALNESS.png"
-      );
-      const leftBoxTexture = textureLoader.load(
-        "/VeneerWhiteOakRandomMatched001_COL_1K_METALNESS.png"
-      );
-      leftBoxTexture.magFilter = THREE.NearestFilter;
-      const rightBoxTexture = textureLoader.load(
-        "/VeneerWhiteOakRandomMatched001_COL_1K_METALNESS.png"
-      );
-      rightBoxTexture.minFilter = THREE.NearestFilter;
+      const sphereTexture = textureLoader.load("/color.jpg");
+      sphereTexture.colorSpace = THREE.SRGBColorSpace;
 
-      // Object
+      // オブジェクト
 
-      const boxGroup = new THREE.Group();
-      scene.add(boxGroup);
+      //  マテリアル
+      const material = new THREE.MeshStandardMaterial();
+      // material.map = sphereTexture;
 
-      const centerBox = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshBasicMaterial({ map: centerBoxTexture })
+      // sphere オブジェクト
+      const sphereRadius = 1;
+      const sphereWidthSegments = 32;
+      const sphereHeightSegments = 32;
+
+      const sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(
+          sphereRadius,
+          sphereWidthSegments,
+          sphereHeightSegments
+        ),
+        material
       );
-      centerBox.position.set(0, 0, 0);
-      boxGroup.add(centerBox);
+      scene.add(sphere);
 
-      const rightBox = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshBasicMaterial({ map: rightBoxTexture })
-      );
-      rightBox.position.set(2, 0, 0);
-      boxGroup.add(rightBox);
+      // 環境マップ
+      const rgbeLoader = new RGBELoader();
+      rgbeLoader.load("/envmap.hdr", (environmentMap) => {
+        environmentMap.mapping = THREE.EquirectangularReflectionMapping;
 
-      const leftBox = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshBasicMaterial({ map: leftBoxTexture })
-      );
-      leftBox.position.set(-2, 0, 0);
-      boxGroup.add(leftBox);
+        scene.background = environmentMap;
+        scene.environment = environmentMap;
+      });
 
-      // lil-gui
+      // デバッグUI
       const gui = new GUI({
         width: 400,
         title: "デバッグUI",
@@ -83,9 +83,9 @@ export default function Home() {
       const debugObject = {
         scale: 1,
         spin: () => {
-          gsap.to(boxGroup.rotation, {
+          gsap.to(sphere.rotation, {
             duration: 1,
-            x: boxGroup.rotation.x + Math.PI * 2,
+            y: sphere.rotation.y + Math.PI * 2,
           });
         },
       };
@@ -93,14 +93,8 @@ export default function Home() {
       const boxFolder = gui.addFolder("BOX");
 
       const visibleFolder = boxFolder.addFolder("BOX表示");
-      visibleFolder.add(leftBox, "visible").name("左のBOX");
-      visibleFolder.add(centerBox, "visible").name("中央BOX");
-      visibleFolder.add(rightBox, "visible").name("右のBOX");
 
       const wireframeFolder = boxFolder.addFolder("ワイヤーフレーム");
-      wireframeFolder.add(leftBox.material, "wireframe").name("左のBOX");
-      wireframeFolder.add(centerBox.material, "wireframe").name("中央BOX");
-      wireframeFolder.add(rightBox.material, "wireframe").name("右のBOX");
 
       const animationFolder = boxFolder.addFolder("アニメーション");
       animationFolder.add(debugObject, "spin");
@@ -112,7 +106,7 @@ export default function Home() {
         .step(0.001)
         .name("大きさの変更")
         .onChange(() => {
-          boxGroup.scale.set(
+          sphere.scale.set(
             debugObject.scale,
             debugObject.scale,
             debugObject.scale
@@ -120,9 +114,6 @@ export default function Home() {
         });
 
       const colorFolder = boxFolder.addFolder("BOXカラー");
-      colorFolder.addColor(leftBox.material, "color").name("左のBOXカラー");
-      colorFolder.addColor(centerBox.material, "color").name("中央BOXカラー");
-      colorFolder.addColor(rightBox.material, "color").name("右のBOXカラー");
 
       // Sizes
       const sizes = {
@@ -147,49 +138,36 @@ export default function Home() {
       };
       window.addEventListener("resize", handleResize);
 
-      // Fullscreen
-      // const handleDbulclick = () => {
-      //   !document.fullscreenElement
-      //     ? canvas.requestFullscreen()
-      //     : document.exitFullscreen();
-      // };
-      // window.addEventListener("dblclick", handleDbulclick);
-
-      // Camera
+      // カメラ
       const camera = new THREE.PerspectiveCamera(
         75,
-        sizes.width / sizes.height
+        sizes.width / sizes.height,
+        0.1,
+        100
       );
-      camera.position.x = 0;
-      camera.position.y = 0;
+      camera.position.x = 1;
+      camera.position.y = 1;
       camera.position.z = 5;
       scene.add(camera);
 
       // Contorols
       const controls = new OrbitControls(camera, canvas);
+      controls.enableDamping = true;
 
       // Renderer
       const renderer = new THREE.WebGLRenderer({
         canvas: canvas,
-        // alpha: true,
       });
       renderer.setSize(sizes.width, sizes.height);
-      renderer.setClearColor("#93C5FD");
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
       // ループアニメーション
       const animetion = () => {
         controls.update();
-        camera.lookAt(boxGroup.position);
         renderer.render(scene, camera);
         requestAnimationFrame(animetion);
       };
       animetion();
-
-      return () => {
-        gui.destroy();
-        window.removeEventListener("resize", handleResize);
-        // window.removeEventListener("dblclick", handleDbulclick);
-      };
     }
   }, []);
 
