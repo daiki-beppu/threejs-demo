@@ -1,11 +1,11 @@
 "use client";
 
-import gsap from "gsap";
+import GUI from "lil-gui";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import GUI from "lil-gui";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -21,52 +21,84 @@ export default function Home() {
       // テクスチャ
       const loadingManager = new THREE.LoadingManager();
 
-      loadingManager.onLoad = () => {
-        console.log("ロード中");
-      };
-
-      loadingManager.onProgress = () => {
-        console.log("ロード完了");
-      };
-
-      loadingManager.onError = () => {
-        console.log("エラー");
-      };
-
       const textureLoader = new THREE.TextureLoader(loadingManager);
 
-      const sphereTexture = textureLoader.load("/color.jpg");
+      const sphereTexture = textureLoader.load("");
       sphereTexture.colorSpace = THREE.SRGBColorSpace;
+
+      // 環境マップ
+      // const rgbeLoader = new RGBELoader();
+      // rgbeLoader.load("/envmap.hdr", (environmentMap) => {
+      //   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+
+      //   scene.background = environmentMap;
+      //   scene.environment = environmentMap;
+      // });
 
       // オブジェクト
 
+      // 3D テキスト
+      const fontLoader = new FontLoader();
+      fontLoader.load("/fonts/gentilis_regular.typeface.json", (font) => {
+        const textGeometry = new TextGeometry("welcome !", {
+          font: font,
+          size: 0.5,
+          depth: 0.2,
+          curveSegments: 5,
+          bevelEnabled: true,
+          bevelThickness: 0.03,
+          bevelSize: 0.02,
+          bevelOffset: 0,
+          bevelSegments: 4,
+        });
+
+        const text = new THREE.Mesh(textGeometry, textMaterial);
+        textGeometry.center();
+        scene.add(text);
+      });
+
       //  マテリアル
-      const material = new THREE.MeshStandardMaterial();
-      // material.map = sphereTexture;
+      const textMaterial = new THREE.MeshNormalMaterial();
+      const sphereMaterial = new THREE.MeshNormalMaterial();
+      sphereMaterial.transparent = true;
+      sphereMaterial.opacity = 0.6;
 
       // sphere オブジェクト
-      const sphereRadius = 1;
-      const sphereWidthSegments = 32;
-      const sphereHeightSegments = 32;
+      const sphereParamas = {
+        radius: 1,
+        widthSegments: 32,
+        heightSegments: 32,
+      };
 
-      const sphere = new THREE.Mesh(
-        new THREE.SphereGeometry(
-          sphereRadius,
-          sphereWidthSegments,
-          sphereHeightSegments
-        ),
-        material
+      const sphereGeometry = new THREE.SphereGeometry(
+        sphereParamas.radius,
+        sphereParamas.widthSegments,
+        sphereParamas.heightSegments
       );
-      scene.add(sphere);
 
-      // 環境マップ
-      const rgbeLoader = new RGBELoader();
-      rgbeLoader.load("/envmap.hdr", (environmentMap) => {
-        environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+      for (let i = 0; i < 150; i += 1) {
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        const randomPosition = {
+          x: (Math.random() - 0.5) * 10,
+          y: (Math.random() - 0.5) * 10,
+          z: (Math.random() - 0.5) * 10,
+        };
+        sphere.position.x = randomPosition.x;
+        sphere.position.y = randomPosition.y;
+        sphere.position.z = randomPosition.z;
 
-        scene.background = environmentMap;
-        scene.environment = environmentMap;
-      });
+        const randomRotaiton = {
+          x: Math.random() * Math.PI,
+          y: Math.random() * Math.PI,
+          z: Math.random() * Math.PI,
+        };
+
+        sphere.rotation.x = randomRotaiton.x;
+        sphere.rotation.y = randomRotaiton.y;
+
+        sphere.scale.set(0.25, 0.25, 0.25);
+        scene.add(sphere);
+      }
 
       // デバッグUI
       const gui = new GUI({
@@ -79,41 +111,6 @@ export default function Home() {
       window.addEventListener("keydown", (event) => {
         event.key === "," ? gui.show(gui._hidden) : "";
       });
-
-      const debugObject = {
-        scale: 1,
-        spin: () => {
-          gsap.to(sphere.rotation, {
-            duration: 1,
-            y: sphere.rotation.y + Math.PI * 2,
-          });
-        },
-      };
-
-      const boxFolder = gui.addFolder("BOX");
-
-      const visibleFolder = boxFolder.addFolder("BOX表示");
-
-      const wireframeFolder = boxFolder.addFolder("ワイヤーフレーム");
-
-      const animationFolder = boxFolder.addFolder("アニメーション");
-      animationFolder.add(debugObject, "spin");
-
-      boxFolder
-        .add(debugObject, "scale")
-        .min(1)
-        .max(3)
-        .step(0.001)
-        .name("大きさの変更")
-        .onChange(() => {
-          sphere.scale.set(
-            debugObject.scale,
-            debugObject.scale,
-            debugObject.scale
-          );
-        });
-
-      const colorFolder = boxFolder.addFolder("BOXカラー");
 
       // Sizes
       const sizes = {
@@ -145,8 +142,7 @@ export default function Home() {
         0.1,
         100
       );
-      camera.position.x = 1;
-      camera.position.y = 1;
+
       camera.position.z = 5;
       scene.add(camera);
 
@@ -157,8 +153,11 @@ export default function Home() {
       // Renderer
       const renderer = new THREE.WebGLRenderer({
         canvas: canvas,
+        alpha: true,
+        antialias: true,
       });
       renderer.setSize(sizes.width, sizes.height);
+      renderer.setClearColor("#FFA84E");
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
       // ループアニメーション
