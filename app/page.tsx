@@ -26,17 +26,7 @@ export default function Home() {
       const sphereTexture = textureLoader.load("");
       sphereTexture.colorSpace = THREE.SRGBColorSpace;
 
-      // 環境マップ
-      // const rgbeLoader = new RGBELoader();
-      // rgbeLoader.load("/envmap.hdr", (environmentMap) => {
-      //   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-
-      //   scene.background = environmentMap;
-      //   scene.environment = environmentMap;
-      // });
-
       // オブジェクト
-
       // 3D テキスト
       const fontLoader = new FontLoader();
       fontLoader.load("/fonts/gentilis_regular.typeface.json", (font) => {
