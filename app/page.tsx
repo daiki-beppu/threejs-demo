@@ -1,5 +1,6 @@
 "use client";
 
+import gsap from "gsap";
 import GUI from "lil-gui";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -19,12 +20,10 @@ export default function Home() {
       const scene = new THREE.Scene();
 
       // テクスチャ
-      const loadingManager = new THREE.LoadingManager();
 
-      const textureLoader = new THREE.TextureLoader(loadingManager);
-
-      const sphereTexture = textureLoader.load("");
-      sphereTexture.colorSpace = THREE.SRGBColorSpace;
+      //  マテリアル
+      const textMaterial = new THREE.MeshStandardMaterial({ color: 0xebcd8f });
+      const planeMaterial = new THREE.MeshStandardMaterial({ color: 0xfffffe });
 
       // オブジェクト
       // 3D テキスト
@@ -32,7 +31,7 @@ export default function Home() {
       fontLoader.load("/fonts/gentilis_regular.typeface.json", (font) => {
         const textGeometry = new TextGeometry("welcome !", {
           font: font,
-          size: 0.5,
+          size: 1,
           depth: 0.2,
           curveSegments: 5,
           bevelEnabled: true,
@@ -44,51 +43,23 @@ export default function Home() {
 
         const text = new THREE.Mesh(textGeometry, textMaterial);
         textGeometry.center();
+        text.castShadow = true;
         scene.add(text);
       });
 
-      //  マテリアル
-      const textMaterial = new THREE.MeshStandardMaterial();
-      const sphereMaterial = new THREE.MeshStandardMaterial();
-      sphereMaterial.transparent = true;
-      sphereMaterial.opacity = 0.6;
-
-      // sphere オブジェクト
-      const sphereParamas = {
-        radius: 1,
-        widthSegments: 32,
-        heightSegments: 32,
+      const planeParams = {
+        width: 10,
+        height: 10,
       };
 
-      const sphereGeometry = new THREE.SphereGeometry(
-        sphereParamas.radius,
-        sphereParamas.widthSegments,
-        sphereParamas.heightSegments
+      const plane = new THREE.Mesh(
+        new THREE.PlaneGeometry(planeParams.width, planeParams.height),
+        planeMaterial
       );
 
-      for (let i = 0; i < 150; i += 1) {
-        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        const randomPosition = {
-          x: (Math.random() - 0.5) * 10,
-          y: (Math.random() - 0.5) * 10,
-          z: (Math.random() - 0.5) * 10,
-        };
-        sphere.position.x = randomPosition.x;
-        sphere.position.y = randomPosition.y;
-        sphere.position.z = randomPosition.z;
-
-        const randomRotaiton = {
-          x: Math.random() * Math.PI,
-          y: Math.random() * Math.PI,
-          z: Math.random() * Math.PI,
-        };
-
-        sphere.rotation.x = randomRotaiton.x;
-        sphere.rotation.y = randomRotaiton.y;
-
-        sphere.scale.set(0.15, 0.15, 0.15);
-        scene.add(sphere);
-      }
+      plane.position.set(0, 0, -1);
+      plane.receiveShadow = true;
+      scene.add(plane);
 
       // ライト
       const ambientLightParams = {
@@ -102,7 +73,7 @@ export default function Home() {
       );
 
       const directionalLightParams = {
-        color: 0xebcd8f,
+        color: 0xffffff,
         intensity: 2,
       };
 
@@ -111,42 +82,35 @@ export default function Home() {
         directionalLightParams.intensity
       );
       directionalLight.position.set(0, -1, 2);
+      directionalLight.castShadow = true;
 
-      const pointLightParams = {
-        color: 0xebcd8f,
-        intensity: 6,
-        distance: 10,
-        decay: 2,
-      };
+      directionalLight.shadow.mapSize.width = 1024;
+      directionalLight.shadow.mapSize.height = 1024;
 
-      for (let i = 0; i < 10; i += 1) {
-        const pointLight = new THREE.PointLight(
-          pointLightParams.color,
-          pointLightParams.intensity,
-          pointLightParams.distance,
-          pointLightParams.decay
-        );
-        const randomPosition = {
-          x: (Math.random() - 0.5) * 10,
-          y: (Math.random() - 0.5) * 10,
-          z: (Math.random() - 0.5) * 10,
-        };
-        pointLight.position.x = randomPosition.x;
-        pointLight.position.y = randomPosition.y;
-        pointLight.position.z = randomPosition.z;
-
-        scene.add(pointLight);
-      }
+      // 影の生成範囲を制御
+      directionalLight.shadow.camera.top = 2;
+      directionalLight.shadow.camera.right = 3;
+      directionalLight.shadow.camera.bottom = -2;
+      directionalLight.shadow.camera.left = -3;
+      directionalLight.shadow.camera.near = 0.7;
+      directionalLight.shadow.camera.far = 4;
 
       scene.add(ambientLight, directionalLight);
 
-      // ヘルパー
+      // ライトヘルパー
       const directionalLightHelper = new THREE.DirectionalLightHelper(
         directionalLight,
         0.2
       );
+      directionalLightHelper.visible = false;
+      scene.add(directionalLightHelper);
 
-      // scene.add(directionalLightHelper);
+      // カメラヘルパー
+      const directionalLighCameratHelper = new THREE.CameraHelper(
+        directionalLight.shadow.camera
+      );
+      directionalLighCameratHelper.visible = false;
+      scene.add(directionalLighCameratHelper);
 
       // デバッグUI
       const gui = new GUI({
@@ -154,6 +118,18 @@ export default function Home() {
         title: "デバッグUI",
         closeFolders: true,
       });
+      gui.hide();
+
+      // directionalLight
+      const directionalLightDebugUI = gui.addFolder("directionalLight");
+
+      const helperFolder = directionalLightDebugUI.addFolder("ヘルパー");
+      helperFolder
+        .add(directionalLighCameratHelper, "visible")
+        .name("カメラヘルパー");
+      helperFolder
+        .add(directionalLightHelper, "visible")
+        .name("ライトヘルパー");
 
       // デバッグUIの表示切り替え
       window.addEventListener("keydown", (event) => {
@@ -191,7 +167,7 @@ export default function Home() {
         100
       );
 
-      camera.position.z = 5;
+      camera.position.z = 7;
       scene.add(camera);
 
       // Contorols
@@ -207,6 +183,10 @@ export default function Home() {
       renderer.setSize(sizes.width, sizes.height);
       renderer.setClearColor("#7DD3FC");
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // 影を有効にする
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFShadowMap;
 
       // ループアニメーション
       const animetion = () => {
