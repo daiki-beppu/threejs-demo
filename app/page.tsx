@@ -81,6 +81,8 @@ export default function Home() {
         .step(0.01)
         .name("z軸 移動");
 
+      bodyFolder.close();
+
       // ギターのネック
       const neckParams = {
         width: 0.8,
@@ -97,7 +99,7 @@ export default function Home() {
         new THREE.MeshStandardMaterial({ color: "#734e30" })
       );
 
-      neck.position.y = bodyParams.width;
+      neck.position.y = bodyParams.height - 0.5;
       neck.position.z = bodyParams.depth / 2;
 
       guiterGroup.add(neck);
@@ -130,6 +132,8 @@ export default function Home() {
         .step(0.01)
         .name("z軸 移動");
 
+      neckFolder.close();
+
       // ヘッド
 
       const headParams = {
@@ -147,7 +151,7 @@ export default function Home() {
         new THREE.MeshStandardMaterial({ color: "black" })
       );
 
-      head.position.y = bodyParams.width + neckParams.height / 2;
+      head.position.y = bodyParams.width + neckParams.height / 2 + 0.1;
       head.position.z = bodyParams.depth / 2;
 
       guiterGroup.add(head);
@@ -180,6 +184,8 @@ export default function Home() {
         .step(0.01)
         .name("z軸 移動");
 
+      headFolder.close();
+
       // ペグ
 
       const pegGroup = new THREE.Group();
@@ -189,18 +195,25 @@ export default function Home() {
         segments: 16,
       };
 
-      const peg1stString = new THREE.Mesh(
-        new THREE.CircleGeometry(pegParams.radius, pegParams.segments),
-        new THREE.MeshStandardMaterial({ color: "silver" })
+      const pegsGeometry = new THREE.CircleGeometry(
+        pegParams.radius,
+        pegParams.segments
       );
+      const pegsMaterial = new THREE.MeshStandardMaterial({ color: "silver" });
+
+      // 1弦のペグ
+      const peg1stString = new THREE.Mesh(pegsGeometry, pegsMaterial);
+
       peg1stString.position.x = headParams.width / 5;
       peg1stString.position.y =
         (bodyParams.height + neckParams.height + headParams.height) / 2 + 0.4;
       peg1stString.position.z = headParams.depth + 0.01;
       pegGroup.add(peg1stString);
 
-      // 1弦のペグ
       const pegFolder = gui.addFolder("ペグ");
+
+      pegFolder.close();
+
       const peg1stStringFolder = pegFolder.addFolder("1弦ペグ");
       peg1stStringFolder
         .add(pegParams, "radius")
@@ -237,11 +250,9 @@ export default function Home() {
 
       // 2弦のペグ
 
-      const peg2ndString = new THREE.Mesh(
-        new THREE.CircleGeometry(pegParams.radius, pegParams.segments),
-        new THREE.MeshStandardMaterial({ color: "silver" })
-      );
-      peg2ndString.position.x = headParams.width / 5 + 0.075;
+      const peg2ndString = new THREE.Mesh(pegsGeometry, pegsMaterial);
+
+      peg2ndString.position.x = headParams.width / 5;
       peg2ndString.position.y =
         (bodyParams.height + neckParams.height + headParams.height) / 2 + 0.8;
       peg2ndString.position.z = headParams.depth + 0.01;
@@ -283,11 +294,9 @@ export default function Home() {
         .name("z軸 移動");
 
       // 3弦のペグ
-      const peg3rdString = new THREE.Mesh(
-        new THREE.CircleGeometry(pegParams.radius, pegParams.segments),
-        new THREE.MeshStandardMaterial({ color: "silver" })
-      );
-      peg3rdString.position.x = headParams.width / 5 + 0.15;
+      const peg3rdString = new THREE.Mesh(pegsGeometry, pegsMaterial);
+
+      peg3rdString.position.x = headParams.width / 5;
       peg3rdString.position.y =
         (bodyParams.height + neckParams.height + headParams.height) / 2 + 1.2;
       peg3rdString.position.z = headParams.depth + 0.01;
@@ -329,10 +338,8 @@ export default function Home() {
         .name("z軸 移動");
 
       // 4弦のペグ
-      const peg4thString = new THREE.Mesh(
-        new THREE.CircleGeometry(pegParams.radius, pegParams.segments),
-        new THREE.MeshStandardMaterial({ color: "silver" })
-      );
+      const peg4thString = new THREE.Mesh(pegsGeometry, pegsMaterial);
+
       peg4thString.position.x = -headParams.width / 5;
       peg4thString.position.y =
         (bodyParams.height + neckParams.height + headParams.height) / 2 + 0.4;
@@ -376,11 +383,9 @@ export default function Home() {
 
       // 5弦のペグ
 
-      const peg5thString = new THREE.Mesh(
-        new THREE.CircleGeometry(pegParams.radius, pegParams.segments),
-        new THREE.MeshStandardMaterial({ color: "silver" })
-      );
-      peg5thString.position.x = -headParams.width / 5 - 0.075;
+      const peg5thString = new THREE.Mesh(pegsGeometry, pegsMaterial);
+
+      peg5thString.position.x = -headParams.width / 5;
       peg5thString.position.y =
         (bodyParams.height + neckParams.height + headParams.height) / 2 + 0.8;
       peg5thString.position.z = headParams.depth + 0.01;
@@ -422,11 +427,9 @@ export default function Home() {
         .name("z軸 移動");
 
       // 6弦のペグ
-      const peg6thString = new THREE.Mesh(
-        new THREE.CircleGeometry(pegParams.radius, pegParams.segments),
-        new THREE.MeshStandardMaterial({ color: "silver" })
-      );
-      peg6thString.position.x = -headParams.width / 5 - 0.15;
+      const peg6thString = new THREE.Mesh(pegsGeometry, pegsMaterial);
+
+      peg6thString.position.x = -headParams.width / 5;
       peg6thString.position.y =
         (bodyParams.height + neckParams.height + headParams.height) / 2 + 1.2;
       peg6thString.position.z = headParams.depth + 0.01;
@@ -468,6 +471,114 @@ export default function Home() {
         .name("z軸 移動");
 
       guiterGroup.add(pegGroup);
+
+      // ピックアップの作成
+      const pickupParams = {
+        width: 1.5,
+        height: 0.7,
+        depth: 0.15,
+      };
+
+      const pickupGeometry = new THREE.BoxGeometry(
+        pickupParams.width,
+        pickupParams.height,
+        pickupParams.depth
+      );
+
+      const pickupMaterial = new THREE.MeshStandardMaterial({ color: "black" });
+
+      // フロント
+      const frontPickup = new THREE.Mesh(pickupGeometry, pickupMaterial);
+
+      frontPickup.position.y = neck.position.y / 2 - 0.95;
+      frontPickup.position.z = bodyParams.depth / 2;
+
+      guiterGroup.add(frontPickup);
+
+      const pickupFolder = gui.addFolder("ピックアップ");
+      pickupFolder.close();
+      const frontPickupFolder = pickupFolder.addFolder("フロント");
+      frontPickupFolder
+        .add(frontPickup.scale, "x")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("幅");
+      frontPickupFolder
+        .add(frontPickup.scale, "y")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("高さ");
+      frontPickupFolder
+        .add(frontPickup.scale, "z")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("奥行き");
+      frontPickupFolder
+        .add(frontPickup.position, "x")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("x軸 移動");
+      frontPickupFolder
+        .add(frontPickup.position, "y")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("y軸 移動");
+      frontPickupFolder
+        .add(frontPickup.position, "z")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("z軸 移動");
+
+      // リア
+      const rearPickup = new THREE.Mesh(pickupGeometry, pickupMaterial);
+
+      rearPickup.position.z = bodyParams.depth / 2;
+
+      guiterGroup.add(rearPickup);
+
+      const rearPickupFolder = pickupFolder.addFolder("リア");
+      rearPickupFolder
+        .add(rearPickup.scale, "x")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("幅");
+      rearPickupFolder
+        .add(rearPickup.scale, "y")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("高さ");
+      rearPickupFolder
+        .add(rearPickup.scale, "z")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("奥行き");
+      rearPickupFolder
+        .add(rearPickup.position, "x")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("x軸 移動");
+      rearPickupFolder
+        .add(rearPickup.position, "y")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("y軸 移動");
+      rearPickupFolder
+        .add(rearPickup.position, "z")
+        .min(0.1)
+        .max(10)
+        .step(0.01)
+        .name("z軸 移動");
 
       // ライト
       const ambientLightParams = {
