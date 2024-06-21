@@ -3,7 +3,7 @@
 import GUI from "lil-gui";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { Timer } from "three/addons/misc/Timer.js";
+import { Timer } from "three/examples/jsm/Addons.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export default function Home() {
@@ -885,7 +885,7 @@ export default function Home() {
       tailpiece.position.y = frontVolumeGuiterKnob.position.y;
       tailpiece.position.z = bodyParams.depth / 2 + 0.01;
 
-      tailpiece.rotation.z = Math.PI / 2
+      tailpiece.rotation.z = Math.PI / 2;
       guiterGroup.add(tailpiece);
 
       // ライト
