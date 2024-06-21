@@ -64,19 +64,19 @@ export default function Home() {
         .name("奥行き");
       bodyFolder
         .add(body.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       bodyFolder
         .add(body.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       bodyFolder
         .add(body.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -115,19 +115,19 @@ export default function Home() {
         .name("奥行き");
       neckFolder
         .add(neck.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       neckFolder
         .add(neck.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       neckFolder
         .add(neck.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -167,19 +167,19 @@ export default function Home() {
         .name("奥行き");
       headFolder
         .add(head.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       headFolder
         .add(head.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       headFolder
         .add(head.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -231,19 +231,19 @@ export default function Home() {
 
       peg1stStringFolder
         .add(peg1stString.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       peg1stStringFolder
         .add(peg1stString.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       peg1stStringFolder
         .add(peg1stString.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -276,19 +276,19 @@ export default function Home() {
 
       peg2ndStringFolder
         .add(peg2ndString.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       peg2ndStringFolder
         .add(peg2ndString.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       peg2ndStringFolder
         .add(peg2ndString.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -320,19 +320,19 @@ export default function Home() {
 
       peg3rdStringFolder
         .add(peg3rdString.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(6)
         .step(0.01)
         .name("x軸 移動");
       peg3rdStringFolder
         .add(peg3rdString.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(6)
         .step(0.01)
         .name("y軸 移動");
       peg3rdStringFolder
         .add(peg3rdString.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -364,19 +364,19 @@ export default function Home() {
 
       peg4thStringFolder
         .add(peg4thString.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       peg4thStringFolder
         .add(peg4thString.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       peg4thStringFolder
         .add(peg4thString.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -409,19 +409,19 @@ export default function Home() {
 
       peg5thStringFolder
         .add(peg5thString.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       peg5thStringFolder
         .add(peg5thString.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       peg5thStringFolder
         .add(peg5thString.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -453,19 +453,19 @@ export default function Home() {
 
       peg6thStringFolder
         .add(peg6thString.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       peg6thStringFolder
         .add(peg6thString.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       peg6thStringFolder
         .add(peg6thString.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -518,19 +518,19 @@ export default function Home() {
         .name("奥行き");
       frontPickupFolder
         .add(frontPickup.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       frontPickupFolder
         .add(frontPickup.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       frontPickupFolder
         .add(frontPickup.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
@@ -563,22 +563,330 @@ export default function Home() {
         .name("奥行き");
       rearPickupFolder
         .add(rearPickup.position, "x")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("x軸 移動");
       rearPickupFolder
         .add(rearPickup.position, "y")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("y軸 移動");
       rearPickupFolder
         .add(rearPickup.position, "z")
-        .min(0.1)
+        .min(-5)
         .max(10)
         .step(0.01)
         .name("z軸 移動");
+
+      // ピックアップセレクター
+
+      // ピックアップセレクター ベース
+      const pickupSelectorBaseParams = {
+        radius: 0.3,
+        segments: 16,
+      };
+
+      const pickupSelectorBaseGeometry = new THREE.CircleGeometry(
+        pickupSelectorBaseParams.radius,
+        pickupSelectorBaseParams.segments
+      );
+      const pickupSelectorBaseMaterial = new THREE.MeshStandardMaterial({
+        color: "black",
+      });
+
+      const pickupSelectorBase = new THREE.Mesh(
+        pickupSelectorBaseGeometry,
+        pickupSelectorBaseMaterial
+      );
+
+      pickupSelectorBase.position.x = -bodyParams.width / 3;
+      pickupSelectorBase.position.y = bodyParams.height / 2 - 1;
+      pickupSelectorBase.position.z = bodyParams.depth / 2 + 0.001;
+
+      guiterGroup.add(pickupSelectorBase);
+
+      const pickupSelectorFolder = gui.addFolder("ピックアップセレクター");
+      pickupSelectorFolder.close();
+      const pickupSelectorBaseFolder =
+        pickupSelectorFolder.addFolder("ピックアップセレクターベース");
+      pickupSelectorBaseFolder
+        .add(pickupSelectorBaseParams, "radius")
+        .min(0.01)
+        .max(10)
+        .step(0.01)
+        .name("半径")
+        .onChange((value: number) => {
+          pickupSelectorBase.geometry.dispose();
+          pickupSelectorBase.geometry = new THREE.CircleGeometry(
+            value,
+            pickupSelectorBaseParams.segments
+          );
+        });
+
+      pickupSelectorBaseFolder
+        .add(pickupSelectorBase.position, "x")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("x軸 移動");
+      pickupSelectorBaseFolder
+        .add(pickupSelectorBase.position, "y")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("y軸 移動");
+      pickupSelectorBaseFolder
+        .add(pickupSelectorBase.position, "z")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("z軸 移動");
+
+      // ピックアップセレクター ノブ
+
+      const pickupSelectorKnobParams = {
+        radiusTop: 0.06,
+        radiusBottom: 0.03,
+        height: 0.3,
+        radialSegments: 16,
+      };
+
+      const pickupSelectorKnobGeometry = new THREE.CylinderGeometry(
+        pickupSelectorKnobParams.radiusTop,
+        pickupSelectorKnobParams.radiusBottom,
+        pickupSelectorKnobParams.height,
+        pickupSelectorKnobParams.radialSegments
+      );
+
+      const pickupSelectorKnobMatelial = new THREE.MeshStandardMaterial({
+        color: "silver",
+      });
+
+      const pickupSelectorKnob = new THREE.Mesh(
+        pickupSelectorKnobGeometry,
+        pickupSelectorKnobMatelial
+      );
+
+      pickupSelectorKnob.position.x = pickupSelectorBase.position.x;
+      pickupSelectorKnob.position.y = pickupSelectorBase.position.y;
+      pickupSelectorKnob.position.z = pickupSelectorBase.position.z + 0.01;
+
+      pickupSelectorKnob.rotation.x = Math.PI / 2;
+      pickupSelectorKnob.rotation.z = Math.PI / 6;
+
+      guiterGroup.add(pickupSelectorKnob);
+
+      // コントロールノブ
+      const controlKnobParams = {
+        radiusTop: 0.15,
+        radiusBottom: 0.2,
+        height: 0.3,
+        radialSegments: 16,
+      };
+
+      const controlKnobGometry = new THREE.CylinderGeometry(
+        controlKnobParams.radiusTop,
+        controlKnobParams.radiusBottom,
+        controlKnobParams.height,
+        controlKnobParams.radialSegments
+      );
+
+      const controlKnobMaterial = new THREE.MeshStandardMaterial({
+        color: "black",
+      });
+
+      // フロント ボリューム
+      const frontVolumeGuiterKnob = new THREE.Mesh(
+        controlKnobGometry,
+        controlKnobMaterial
+      );
+
+      frontVolumeGuiterKnob.position.x = 1;
+      frontVolumeGuiterKnob.position.y = -1.2;
+      frontVolumeGuiterKnob.position.z = bodyParams.depth / 2 + 0.001;
+
+      frontVolumeGuiterKnob.rotation.x = Math.PI / 2;
+
+      guiterGroup.add(frontVolumeGuiterKnob);
+
+      const controlKnobFolder = gui.addFolder("コントロールノブ");
+      controlKnobFolder.close();
+      const frontVolumeGuiterKnobFolder =
+        controlKnobFolder.addFolder("フロント ボリューム");
+      frontVolumeGuiterKnobFolder
+        .add(frontVolumeGuiterKnob.position, "x")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("x軸 移動");
+      frontVolumeGuiterKnobFolder
+        .add(frontVolumeGuiterKnob.position, "y")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("y軸 移動");
+      frontVolumeGuiterKnobFolder
+        .add(frontVolumeGuiterKnob.position, "z")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("z軸 移動");
+
+      // フロント トーン
+      const frontToneGuiterKnob = new THREE.Mesh(
+        controlKnobGometry,
+        controlKnobMaterial
+      );
+
+      frontToneGuiterKnob.position.x = 1;
+      frontToneGuiterKnob.position.y = -2;
+      frontToneGuiterKnob.position.z = bodyParams.depth / 2 + 0.001;
+
+      frontToneGuiterKnob.rotation.x = Math.PI / 2;
+
+      guiterGroup.add(frontToneGuiterKnob);
+
+      const frontToneGuiterKnobFolder =
+        controlKnobFolder.addFolder("フロント トーン");
+      frontToneGuiterKnobFolder
+        .add(frontToneGuiterKnob.position, "x")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("x軸 移動");
+      frontToneGuiterKnobFolder
+        .add(frontToneGuiterKnob.position, "y")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("y軸 移動");
+      frontToneGuiterKnobFolder
+        .add(frontToneGuiterKnob.position, "z")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("z軸 移動");
+
+      // リア ボリューム
+      const rearVolumeGuiterKnob = new THREE.Mesh(
+        controlKnobGometry,
+        controlKnobMaterial
+      );
+
+      rearVolumeGuiterKnob.position.x = frontVolumeGuiterKnob.position.x + 0.6;
+      rearVolumeGuiterKnob.position.y = frontVolumeGuiterKnob.position.y + 0.4;
+      rearVolumeGuiterKnob.position.z = bodyParams.depth / 2 + 0.001;
+
+      rearVolumeGuiterKnob.rotation.x = Math.PI / 2;
+
+      guiterGroup.add(rearVolumeGuiterKnob);
+
+      const rearVolumeGuiterKnobFolder =
+        controlKnobFolder.addFolder("リア ボリューム");
+      rearVolumeGuiterKnobFolder
+        .add(rearVolumeGuiterKnob.position, "x")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("x軸 移動");
+      rearVolumeGuiterKnobFolder
+        .add(rearVolumeGuiterKnob.position, "y")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("y軸 移動");
+      rearVolumeGuiterKnobFolder
+        .add(rearVolumeGuiterKnob.position, "z")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("z軸 移動");
+
+      // リア トーン
+      const rearToneGuiterKnob = new THREE.Mesh(
+        controlKnobGometry,
+        controlKnobMaterial
+      );
+
+      rearToneGuiterKnob.position.x = frontVolumeGuiterKnob.position.x + 0.6;
+      rearToneGuiterKnob.position.y = frontVolumeGuiterKnob.position.y - 0.4;
+      rearToneGuiterKnob.position.z = bodyParams.depth / 2 + 0.001;
+
+      rearToneGuiterKnob.rotation.x = Math.PI / 2;
+
+      guiterGroup.add(rearToneGuiterKnob);
+
+      const rearToneGuiterKnobFolder =
+        controlKnobFolder.addFolder("フロント トーン");
+      rearToneGuiterKnobFolder
+        .add(rearToneGuiterKnob.position, "x")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("x軸 移動");
+      rearToneGuiterKnobFolder
+        .add(rearToneGuiterKnob.position, "y")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("y軸 移動");
+      rearToneGuiterKnobFolder
+        .add(rearToneGuiterKnob.position, "z")
+        .min(-5)
+        .max(10)
+        .step(0.01)
+        .name("z軸 移動");
+
+      // ブリッジ
+      const bridgeParams = {
+        width: pickupParams.width - 0.1,
+        height: 0.3,
+        depth: pickupParams.depth,
+      };
+
+      const bridgeGeometry = new THREE.BoxGeometry(
+        bridgeParams.width,
+        bridgeParams.height,
+        bridgeParams.depth
+      );
+
+      const bridgeMaterial = new THREE.MeshStandardMaterial({
+        color: "silver",
+      });
+
+      const bridge = new THREE.Mesh(bridgeGeometry, bridgeMaterial);
+
+      bridge.position.y = -0.75;
+      bridge.position.z = bodyParams.depth / 2 + 0.01;
+
+      guiterGroup.add(bridge);
+
+      // テイルピース
+
+      const tailpieceParams = {
+        radius: 0.1,
+        length: pickupParams.width - 0.35,
+        capSegments: 4,
+        radialSegments: 8,
+      };
+      const tailpieceGeometry = new THREE.CapsuleGeometry(
+        tailpieceParams.radius,
+        tailpieceParams.length,
+        tailpieceParams.capSegments,
+        tailpieceParams.radialSegments
+      );
+      const tailpieceMaterial = new THREE.MeshStandardMaterial({
+        color: "silver",
+      });
+      const tailpiece = new THREE.Mesh(tailpieceGeometry, tailpieceMaterial);
+
+      tailpiece.position.y = frontVolumeGuiterKnob.position.y;
+      tailpiece.position.z = bodyParams.depth / 2 + 0.01;
+
+      tailpiece.rotation.z = Math.PI / 2
+      guiterGroup.add(tailpiece);
 
       // ライト
       const ambientLightParams = {
@@ -635,6 +943,7 @@ export default function Home() {
       const directionalLightDebugUI = gui.addFolder("directionalLight");
 
       const helperFolder = directionalLightDebugUI.addFolder("ヘルパー");
+      helperFolder.close();
       helperFolder
         .add(directionalLighCameratHelper, "visible")
         .name("カメラヘルパー");
