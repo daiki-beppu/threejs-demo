@@ -17,25 +17,113 @@ export default function Home() {
       // Scene
       const scene = new THREE.Scene();
 
+      // テクスチャのロード
+      const textureLoader = new THREE.TextureLoader();
+      const floorcolorTexture = textureLoader.load(
+        "/wood_floor_1k/wood_floor_diff_1k.webp"
+      );
+      const floorARMTexture = textureLoader.load(
+        "/wood_floor_1k/wood_floor_arm_1k.webp"
+      );
+      const floorNormalTexture = textureLoader.load(
+        "/wood_floor_1k/wood_floor_nor_gl_1k.webp"
+      );
+
+      floorcolorTexture.colorSpace = THREE.SRGBColorSpace;
+      floorARMTexture.repeat.set(2, 2);
+      floorARMTexture.wrapS = THREE.RepeatWrapping;
+      floorARMTexture.wrapT = THREE.RepeatWrapping;
+
+      floorNormalTexture.repeat.set(2, 2);
+      floorNormalTexture.wrapS = THREE.RepeatWrapping;
+      floorNormalTexture.wrapT = THREE.RepeatWrapping;
+
+      const wallcolorTexture = textureLoader.load(
+        "/wood_cabinet_worn_long_1k/wood_cabinet_worn_long_diff_1k.webp"
+      );
+      const wallARMTexture = textureLoader.load(
+        "/wood_cabinet_worn_long_1k/wood_cabinet_worn_long_arm_1k.webp"
+      );
+      const wallNormalTexture = textureLoader.load(
+        "/wood_cabinet_worn_long_1k/wood_cabinet_worn_long_nor_gl_1k.webp"
+      );
+
+      wallcolorTexture.colorSpace = THREE.SRGBColorSpace;
+      wallARMTexture.repeat.set(2, 2);
+      wallARMTexture.wrapS = THREE.RepeatWrapping;
+      wallARMTexture.wrapT = THREE.RepeatWrapping;
+
+      wallNormalTexture.repeat.set(2, 2);
+      wallNormalTexture.wrapS = THREE.RepeatWrapping;
+      wallNormalTexture.wrapT = THREE.RepeatWrapping;
+
       // デバッグUI
       const gui = new GUI({
         width: 300,
         title: "デバッグUI",
         // closeFolders: true,
       });
-      // gui.hide();
+      gui.hide();
       guiRef.current = gui;
+
+      // デバッグUIの表示切り替え
+      window.addEventListener("keydown", (event) => {
+        event.key === "," ? gui.show(gui._hidden) : "";
+      });
+
+      const vector3Params = ["x", "y", "z"];
+
+      // 背景
+
+      const backgroundParams = {
+        width: 40,
+        height: 40,
+      };
+
+      const backgroundGeometry = new THREE.PlaneGeometry(
+        backgroundParams.width,
+        backgroundParams.height
+      );
+
+      // 床
+      const floorMaterial = new THREE.MeshStandardMaterial({
+        map: floorcolorTexture,
+        aoMap: floorARMTexture,
+        roughnessMap: floorARMTexture,
+        metalnessMap: floorARMTexture,
+        normalMap: floorNormalTexture,
+      });
+      const floor = new THREE.Mesh(backgroundGeometry, floorMaterial);
+
+      floor.rotation.x = -Math.PI / 2;
+
+      scene.add(floor);
+
+      // 壁
+      const wallMaterial = new THREE.MeshStandardMaterial({
+        map: wallcolorTexture,
+        aoMap: wallARMTexture,
+        roughnessMap: wallARMTexture,
+        metalnessMap: wallARMTexture,
+        normalMap: wallNormalTexture,
+      });
+
+      const wall = new THREE.Mesh(backgroundGeometry, wallMaterial);
+      wall.position.y = 12;
+      wall.position.z = -10;
+      scene.add(wall);
 
       // ギターグループ
       const guiterGroup = new THREE.Group();
-      guiterGroup.position.x = -3.5;
-
+      guiterGroup.position.z = -2;
       guiterGroup.rotation.z = -Math.PI / 3;
+
       guiterGroup.rotation.x = -Math.PI / 9;
+
+      guiterGroup.scale.set(0.8, 0.8, 0.8);
       scene.add(guiterGroup);
 
       // ギターのボディ
-      // オブジェクト
       const bodyParams = {
         width: 4.2,
         height: 5.5,
@@ -48,38 +136,36 @@ export default function Home() {
           bodyParams.height,
           bodyParams.depth
         ),
-        new THREE.MeshStandardMaterial({ color: "#D7A625" })
+        new THREE.MeshStandardMaterial({
+          color: "#D7A625",
+          roughness: 0.3,
+          metalness: 0,
+        })
       );
 
       guiterGroup.add(body);
+      guiterGroup.position.y = bodyParams.height / 2;
 
+      // デバッグ UI
       const bodyFolder = gui.addFolder("ボディ");
-      bodyFolder.add(body.scale, "x").min(0.1).max(10).step(0.01).name("幅");
-      bodyFolder.add(body.scale, "y").min(0.1).max(10).step(0.01).name("高さ");
-      bodyFolder
-        .add(body.scale, "z")
-        .min(0.1)
-        .max(10)
-        .step(0.01)
-        .name("奥行き");
-      bodyFolder
-        .add(body.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      bodyFolder
-        .add(body.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      bodyFolder
-        .add(body.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
+
+      vector3Params.map((vector3) =>
+        bodyFolder
+          .add(body.scale, vector3)
+          .min(0.1)
+          .max(10)
+          .step(0.01)
+          .name(`${vector3}軸のスケール`)
+      );
+
+      vector3Params.map((vector3) =>
+        bodyFolder
+          .add(body.position, vector3)
+          .min(-5)
+          .max(10)
+          .step(0.01)
+          .name(`${vector3}軸の移動`)
+      );
 
       bodyFolder.close();
 
@@ -96,7 +182,9 @@ export default function Home() {
           neckParams.height,
           neckParams.depth
         ),
-        new THREE.MeshStandardMaterial({ color: "#734e30" })
+        new THREE.MeshStandardMaterial({
+          color: "#734e30",
+        })
       );
 
       neck.position.y = bodyParams.height - 0.5;
@@ -104,40 +192,31 @@ export default function Home() {
 
       guiterGroup.add(neck);
 
+      // デバッグ UI
       const neckFolder = gui.addFolder("ネック");
-      neckFolder.add(neck.scale, "x").min(0.1).max(10).step(0.01).name("幅");
-      neckFolder.add(neck.scale, "y").min(0.1).max(10).step(0.01).name("高さ");
-      neckFolder
-        .add(neck.scale, "z")
-        .min(0.1)
-        .max(10)
-        .step(0.01)
-        .name("奥行き");
-      neckFolder
-        .add(neck.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      neckFolder
-        .add(neck.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      neckFolder
-        .add(neck.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
+      vector3Params.map((vextor3) =>
+        neckFolder
+          .add(body.scale, vextor3)
+          .min(0.1)
+          .max(10)
+          .step(0.01)
+          .name(`${vextor3}軸のスケール`)
+      );
+      vector3Params.map((vextor3) =>
+        neckFolder
+          .add(body.position, vextor3)
+          .min(-10)
+          .max(10)
+          .step(0.01)
+          .name(`${vextor3}軸のポジション`)
+      );
 
       neckFolder.close();
 
       // ヘッド
 
       const headParams = {
-        width: 1.3,
+        width: bodyParams.width / 3,
         height: 1.5,
         depth: 0.28,
       };
@@ -148,7 +227,7 @@ export default function Home() {
           headParams.height,
           headParams.depth
         ),
-        new THREE.MeshStandardMaterial({ color: "black" })
+        new THREE.MeshStandardMaterial({ color: "black", roughness: 0.3 })
       );
 
       head.position.y = bodyParams.width + neckParams.height / 2 + 0.1;
@@ -157,38 +236,26 @@ export default function Home() {
       guiterGroup.add(head);
 
       const headFolder = gui.addFolder("ヘッド");
-      headFolder.add(head.scale, "x").min(0.1).max(10).step(0.01).name("幅");
-      headFolder.add(head.scale, "y").min(0.1).max(10).step(0.01).name("高さ");
-      headFolder
-        .add(head.scale, "z")
-        .min(0.1)
-        .max(10)
-        .step(0.01)
-        .name("奥行き");
-      headFolder
-        .add(head.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      headFolder
-        .add(head.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      headFolder
-        .add(head.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
+      vector3Params.map((vextor3) =>
+        headFolder
+          .add(body.scale, vextor3)
+          .min(0.1)
+          .max(10)
+          .step(0.01)
+          .name(`${vextor3}軸のスケール`)
+      );
+      vector3Params.map((vextor3) =>
+        headFolder
+          .add(body.position, vextor3)
+          .min(-10)
+          .max(10)
+          .step(0.01)
+          .name(`${vextor3}軸のポジション`)
+      );
 
       headFolder.close();
 
       // ペグ
-
-      const pegGroup = new THREE.Group();
 
       const pegParams = {
         radius: 0.1,
@@ -199,278 +266,57 @@ export default function Home() {
         pegParams.radius,
         pegParams.segments
       );
-      const pegsMaterial = new THREE.MeshStandardMaterial({ color: "silver" });
+      const pegsMaterial = new THREE.MeshStandardMaterial({
+        color: "silver",
+        metalness: 0.1,
+        roughness: 0,
+      });
 
-      // 1弦のペグ
-      const peg1stString = new THREE.Mesh(pegsGeometry, pegsMaterial);
+      const numPegs = 6;
+      const spacingX = 0.4;
+      const spacingY = 0.4;
 
-      peg1stString.position.x = headParams.width / 5;
-      peg1stString.position.y =
-        (bodyParams.height + neckParams.height + headParams.height) / 2 + 0.4;
-      peg1stString.position.z = headParams.depth + 0.01;
-      pegGroup.add(peg1stString);
+      const pegsFolder = gui.addFolder("ペグ");
+      pegsFolder.close();
 
-      const pegFolder = gui.addFolder("ペグ");
+      for (let i = 0; i < numPegs; i++) {
+        const pegs = new THREE.Mesh(pegsGeometry, pegsMaterial);
 
-      pegFolder.close();
+        pegs.position.x = i < 3 ? spacingX : -spacingX;
+        pegs.position.y = head.position.y + (i % 3) * spacingY - 0.3;
+        pegs.position.z = headParams.depth + 0.01;
+        guiterGroup.add(pegs);
 
-      const peg1stStringFolder = pegFolder.addFolder("1弦ペグ");
-      peg1stStringFolder
-        .add(pegParams, "radius")
-        .min(0.01)
-        .max(10)
-        .step(0.01)
-        .name("半径")
-        .onChange((value: number) => {
-          peg1stString.geometry.dispose();
-          peg1stString.geometry = new THREE.CircleGeometry(
-            value,
-            pegParams.segments
-          );
-        });
-
-      peg1stStringFolder
-        .add(peg1stString.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      peg1stStringFolder
-        .add(peg1stString.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      peg1stStringFolder
-        .add(peg1stString.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
-
-      // 2弦のペグ
-
-      const peg2ndString = new THREE.Mesh(pegsGeometry, pegsMaterial);
-
-      peg2ndString.position.x = headParams.width / 5;
-      peg2ndString.position.y =
-        (bodyParams.height + neckParams.height + headParams.height) / 2 + 0.8;
-      peg2ndString.position.z = headParams.depth + 0.01;
-
-      pegGroup.add(peg2ndString);
-
-      const peg2ndStringFolder = pegFolder.addFolder("2弦ペグ");
-      peg2ndStringFolder
-        .add(pegParams, "radius")
-        .min(0.01)
-        .max(10)
-        .step(0.01)
-        .name("半径")
-        .onChange((value: number) => {
-          peg2ndString.geometry.dispose();
-          peg2ndString.geometry = new THREE.CircleGeometry(
-            value,
-            pegParams.segments
-          );
-        });
-
-      peg2ndStringFolder
-        .add(peg2ndString.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      peg2ndStringFolder
-        .add(peg2ndString.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      peg2ndStringFolder
-        .add(peg2ndString.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
-
-      // 3弦のペグ
-      const peg3rdString = new THREE.Mesh(pegsGeometry, pegsMaterial);
-
-      peg3rdString.position.x = headParams.width / 5;
-      peg3rdString.position.y =
-        (bodyParams.height + neckParams.height + headParams.height) / 2 + 1.2;
-      peg3rdString.position.z = headParams.depth + 0.01;
-
-      pegGroup.add(peg3rdString);
-
-      const peg3rdStringFolder = pegFolder.addFolder("3弦ペグ");
-      peg3rdStringFolder
-        .add(pegParams, "radius")
-        .min(0.01)
-        .max(10)
-        .step(0.01)
-        .name("半径")
-        .onChange((value: number) => {
-          peg3rdString.geometry.dispose();
-          peg3rdString.geometry = new THREE.CircleGeometry(
-            value,
-            pegParams.segments
-          );
-        });
-
-      peg3rdStringFolder
-        .add(peg3rdString.position, "x")
-        .min(-5)
-        .max(6)
-        .step(0.01)
-        .name("x軸 移動");
-      peg3rdStringFolder
-        .add(peg3rdString.position, "y")
-        .min(-5)
-        .max(6)
-        .step(0.01)
-        .name("y軸 移動");
-      peg3rdStringFolder
-        .add(peg3rdString.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
-
-      // 4弦のペグ
-      const peg4thString = new THREE.Mesh(pegsGeometry, pegsMaterial);
-
-      peg4thString.position.x = -headParams.width / 5;
-      peg4thString.position.y =
-        (bodyParams.height + neckParams.height + headParams.height) / 2 + 0.4;
-      peg4thString.position.z = headParams.depth + 0.01;
-
-      pegGroup.add(peg4thString);
-
-      const peg4thStringFolder = pegFolder.addFolder("4弦ペグ");
-      peg4thStringFolder
-        .add(pegParams, "radius")
-        .min(0.01)
-        .max(10)
-        .step(0.01)
-        .name("半径")
-        .onChange((value: number) => {
-          peg4thString.geometry.dispose();
-          peg4thString.geometry = new THREE.CircleGeometry(
-            value,
-            pegParams.segments
-          );
-        });
-
-      peg4thStringFolder
-        .add(peg4thString.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      peg4thStringFolder
-        .add(peg4thString.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      peg4thStringFolder
-        .add(peg4thString.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
-
-      // 5弦のペグ
-
-      const peg5thString = new THREE.Mesh(pegsGeometry, pegsMaterial);
-
-      peg5thString.position.x = -headParams.width / 5;
-      peg5thString.position.y =
-        (bodyParams.height + neckParams.height + headParams.height) / 2 + 0.8;
-      peg5thString.position.z = headParams.depth + 0.01;
-
-      pegGroup.add(peg5thString);
-
-      const peg5thStringFolder = pegFolder.addFolder("5弦ペグ");
-      peg5thStringFolder
-        .add(pegParams, "radius")
-        .min(0.01)
-        .max(10)
-        .step(0.01)
-        .name("半径")
-        .onChange((value: number) => {
-          peg5thString.geometry.dispose();
-          peg5thString.geometry = new THREE.CircleGeometry(
-            value,
-            pegParams.segments
-          );
-        });
-
-      peg5thStringFolder
-        .add(peg5thString.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      peg5thStringFolder
-        .add(peg5thString.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      peg5thStringFolder
-        .add(peg5thString.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
-
-      // 6弦のペグ
-      const peg6thString = new THREE.Mesh(pegsGeometry, pegsMaterial);
-
-      peg6thString.position.x = -headParams.width / 5;
-      peg6thString.position.y =
-        (bodyParams.height + neckParams.height + headParams.height) / 2 + 1.2;
-      peg6thString.position.z = headParams.depth + 0.01;
-
-      pegGroup.add(peg6thString);
-
-      const peg6thStringFolder = pegFolder.addFolder("6弦ペグ");
-      peg6thStringFolder
-        .add(pegParams, "radius")
-        .min(0.01)
-        .max(10)
-        .step(0.01)
-        .name("半径")
-        .onChange((value: number) => {
-          peg6thString.geometry.dispose();
-          peg6thString.geometry = new THREE.CircleGeometry(
-            value,
-            pegParams.segments
-          );
-        });
-
-      peg6thStringFolder
-        .add(peg6thString.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      peg6thStringFolder
-        .add(peg6thString.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      peg6thStringFolder
-        .add(peg6thString.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
-
-      guiterGroup.add(pegGroup);
+        const pegStringFolder = pegsFolder.addFolder(`${i + 1}弦ペグ`);
+        pegStringFolder
+          .add(pegParams, "radius")
+          .min(0.01)
+          .max(10)
+          .step(0.01)
+          .name("半径")
+          .onChange((value: number) => {
+            pegs.geometry.dispose();
+            pegs.geometry = new THREE.CircleGeometry(value, pegParams.segments);
+          });
+        pegStringFolder
+          .add(pegs.position, "x")
+          .min(-5)
+          .max(10)
+          .step(0.01)
+          .name("x軸 移動");
+        pegStringFolder
+          .add(pegs.position, "y")
+          .min(-5)
+          .max(10)
+          .step(0.01)
+          .name("y軸 移動");
+        pegStringFolder
+          .add(pegs.position, "z")
+          .min(-5)
+          .max(10)
+          .step(0.01)
+          .name("z軸 移動");
+      }
 
       // ピックアップの作成
       const pickupParams = {
@@ -485,100 +331,42 @@ export default function Home() {
         pickupParams.depth
       );
 
-      const pickupMaterial = new THREE.MeshStandardMaterial({ color: "black" });
+      const pickupMaterial = new THREE.MeshStandardMaterial({
+        color: "black",
+        roughness: 0.3,
+      });
 
-      // フロント
-      const frontPickup = new THREE.Mesh(pickupGeometry, pickupMaterial);
-
-      frontPickup.position.y = neck.position.y / 2 - 0.95;
-      frontPickup.position.z = bodyParams.depth / 2;
-
-      guiterGroup.add(frontPickup);
+      const pickups = [
+        { name: "フロント", positionOffsetY: neck.position.y / 2 - 0.95 },
+        { name: "リア", positionOffsetY: 0 },
+      ];
 
       const pickupFolder = gui.addFolder("ピックアップ");
       pickupFolder.close();
-      const frontPickupFolder = pickupFolder.addFolder("フロント");
-      frontPickupFolder
-        .add(frontPickup.scale, "x")
-        .min(0.1)
-        .max(10)
-        .step(0.01)
-        .name("幅");
-      frontPickupFolder
-        .add(frontPickup.scale, "y")
-        .min(0.1)
-        .max(10)
-        .step(0.01)
-        .name("高さ");
-      frontPickupFolder
-        .add(frontPickup.scale, "z")
-        .min(0.1)
-        .max(10)
-        .step(0.01)
-        .name("奥行き");
-      frontPickupFolder
-        .add(frontPickup.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      frontPickupFolder
-        .add(frontPickup.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      frontPickupFolder
-        .add(frontPickup.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
 
-      // リア
-      const rearPickup = new THREE.Mesh(pickupGeometry, pickupMaterial);
+      pickups.map((pickup) => {
+        const newPickup = new THREE.Mesh(pickupGeometry, pickupMaterial);
+        newPickup.position.y = pickup.positionOffsetY;
+        newPickup.position.z = bodyParams.depth / 2;
 
-      rearPickup.position.z = bodyParams.depth / 2;
+        guiterGroup.add(newPickup);
 
-      guiterGroup.add(rearPickup);
-
-      const rearPickupFolder = pickupFolder.addFolder("リア");
-      rearPickupFolder
-        .add(rearPickup.scale, "x")
-        .min(0.1)
-        .max(10)
-        .step(0.01)
-        .name("幅");
-      rearPickupFolder
-        .add(rearPickup.scale, "y")
-        .min(0.1)
-        .max(10)
-        .step(0.01)
-        .name("高さ");
-      rearPickupFolder
-        .add(rearPickup.scale, "z")
-        .min(0.1)
-        .max(10)
-        .step(0.01)
-        .name("奥行き");
-      rearPickupFolder
-        .add(rearPickup.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      rearPickupFolder
-        .add(rearPickup.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      rearPickupFolder
-        .add(rearPickup.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
+        const newPickupFolder = pickupFolder.addFolder(pickup.name);
+        ["x", "y", "z"].map((vector3) => {
+          newPickupFolder
+            .add(newPickup.scale, vector3)
+            .min(0.1)
+            .max(10)
+            .step(0.01)
+            .name(`${vector3}軸のスケール`);
+          newPickupFolder
+            .add(newPickup.position, vector3)
+            .min(-5)
+            .max(10)
+            .step(0.01)
+            .name(`${vector3}軸の移動`);
+        });
+      });
 
       // ピックアップセレクター
 
@@ -697,147 +485,53 @@ export default function Home() {
         color: "black",
       });
 
-      // フロント ボリューム
-      const frontVolumeGuiterKnob = new THREE.Mesh(
-        controlKnobGometry,
-        controlKnobMaterial
-      );
-
-      frontVolumeGuiterKnob.position.x = 1;
-      frontVolumeGuiterKnob.position.y = -1.2;
-      frontVolumeGuiterKnob.position.z = bodyParams.depth / 2 + 0.001;
-
-      frontVolumeGuiterKnob.rotation.x = Math.PI / 2;
-
-      guiterGroup.add(frontVolumeGuiterKnob);
+      const controlKnobParts = [
+        {
+          name: "フロント ボリューム",
+          position: { x: 1, y: -1.2, z: bodyParams.depth / 2 + 0.001 },
+        },
+        {
+          name: "フロント トーン",
+          position: { x: 1, y: -2, z: bodyParams.depth / 2 + 0.001 },
+        },
+        {
+          name: "リア ボリューム",
+          position: { x: 1.6, y: -0.8, z: bodyParams.depth / 2 + 0.001 },
+        },
+        {
+          name: "リア トーン",
+          position: { x: 1.6, y: -1.6, z: bodyParams.depth / 2 + 0.001 },
+        },
+      ];
 
       const controlKnobFolder = gui.addFolder("コントロールノブ");
       controlKnobFolder.close();
-      const frontVolumeGuiterKnobFolder =
-        controlKnobFolder.addFolder("フロント ボリューム");
-      frontVolumeGuiterKnobFolder
-        .add(frontVolumeGuiterKnob.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      frontVolumeGuiterKnobFolder
-        .add(frontVolumeGuiterKnob.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      frontVolumeGuiterKnobFolder
-        .add(frontVolumeGuiterKnob.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
 
-      // フロント トーン
-      const frontToneGuiterKnob = new THREE.Mesh(
-        controlKnobGometry,
-        controlKnobMaterial
-      );
+      controlKnobParts.map((part) => {
+        const controlKnob = new THREE.Mesh(
+          controlKnobGometry,
+          controlKnobMaterial
+        );
 
-      frontToneGuiterKnob.position.x = 1;
-      frontToneGuiterKnob.position.y = -2;
-      frontToneGuiterKnob.position.z = bodyParams.depth / 2 + 0.001;
+        controlKnob.position.set(
+          part.position.x,
+          part.position.y,
+          part.position.z
+        );
 
-      frontToneGuiterKnob.rotation.x = Math.PI / 2;
+        controlKnob.rotation.x = Math.PI / 2;
+        guiterGroup.add(controlKnob);
 
-      guiterGroup.add(frontToneGuiterKnob);
-
-      const frontToneGuiterKnobFolder =
-        controlKnobFolder.addFolder("フロント トーン");
-      frontToneGuiterKnobFolder
-        .add(frontToneGuiterKnob.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      frontToneGuiterKnobFolder
-        .add(frontToneGuiterKnob.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      frontToneGuiterKnobFolder
-        .add(frontToneGuiterKnob.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
-
-      // リア ボリューム
-      const rearVolumeGuiterKnob = new THREE.Mesh(
-        controlKnobGometry,
-        controlKnobMaterial
-      );
-
-      rearVolumeGuiterKnob.position.x = frontVolumeGuiterKnob.position.x + 0.6;
-      rearVolumeGuiterKnob.position.y = frontVolumeGuiterKnob.position.y + 0.4;
-      rearVolumeGuiterKnob.position.z = bodyParams.depth / 2 + 0.001;
-
-      rearVolumeGuiterKnob.rotation.x = Math.PI / 2;
-
-      guiterGroup.add(rearVolumeGuiterKnob);
-
-      const rearVolumeGuiterKnobFolder =
-        controlKnobFolder.addFolder("リア ボリューム");
-      rearVolumeGuiterKnobFolder
-        .add(rearVolumeGuiterKnob.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      rearVolumeGuiterKnobFolder
-        .add(rearVolumeGuiterKnob.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      rearVolumeGuiterKnobFolder
-        .add(rearVolumeGuiterKnob.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
-
-      // リア トーン
-      const rearToneGuiterKnob = new THREE.Mesh(
-        controlKnobGometry,
-        controlKnobMaterial
-      );
-
-      rearToneGuiterKnob.position.x = frontVolumeGuiterKnob.position.x + 0.6;
-      rearToneGuiterKnob.position.y = frontVolumeGuiterKnob.position.y - 0.4;
-      rearToneGuiterKnob.position.z = bodyParams.depth / 2 + 0.001;
-
-      rearToneGuiterKnob.rotation.x = Math.PI / 2;
-
-      guiterGroup.add(rearToneGuiterKnob);
-
-      const rearToneGuiterKnobFolder =
-        controlKnobFolder.addFolder("フロント トーン");
-      rearToneGuiterKnobFolder
-        .add(rearToneGuiterKnob.position, "x")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("x軸 移動");
-      rearToneGuiterKnobFolder
-        .add(rearToneGuiterKnob.position, "y")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("y軸 移動");
-      rearToneGuiterKnobFolder
-        .add(rearToneGuiterKnob.position, "z")
-        .min(-5)
-        .max(10)
-        .step(0.01)
-        .name("z軸 移動");
+        const knobFolder = controlKnobFolder.addFolder(part.name);
+        ["x", "y", "z"].map((vector3) => {
+          knobFolder
+            .add(controlKnob.position, vector3)
+            .min(-5)
+            .max(10)
+            .step(0.01)
+            .name(`${vector3}軸 移動`);
+        });
+      });
 
       // ブリッジ
       const bridgeParams = {
@@ -854,6 +548,8 @@ export default function Home() {
 
       const bridgeMaterial = new THREE.MeshStandardMaterial({
         color: "silver",
+        roughness: 0,
+        metalness: 0.1,
       });
 
       const bridge = new THREE.Mesh(bridgeGeometry, bridgeMaterial);
@@ -879,14 +575,50 @@ export default function Home() {
       );
       const tailpieceMaterial = new THREE.MeshStandardMaterial({
         color: "silver",
+        roughness: 0,
+        metalness: 0.1,
       });
       const tailpiece = new THREE.Mesh(tailpieceGeometry, tailpieceMaterial);
 
-      tailpiece.position.y = frontVolumeGuiterKnob.position.y;
+      tailpiece.position.y = -1.2;
       tailpiece.position.z = bodyParams.depth / 2 + 0.01;
 
       tailpiece.rotation.z = Math.PI / 2;
       guiterGroup.add(tailpiece);
+
+      // 弦
+      const guiterStringParams = {
+        radius: 0.01,
+        length: neckParams.height + 1.6,
+        capSegments: 1,
+        radialSegments: 16,
+      };
+
+      const guiterStringGeometry = new THREE.CapsuleGeometry(
+        guiterStringParams.radius,
+        guiterStringParams.length,
+        guiterStringParams.capSegments,
+        guiterStringParams.radialSegments
+      );
+      const guiterStringMaterial = new THREE.MeshStandardMaterial({
+        color: "silver",
+        metalness: 0.1,
+        roughness: 0,
+      });
+
+      const numStrings = 6;
+      const spacing = (neckParams.width - 0.1) / (numStrings - 1);
+
+      for (let i = 0; i < numStrings; i++) {
+        const guiterString = new THREE.Mesh(
+          guiterStringGeometry,
+          guiterStringMaterial
+        );
+        guiterString.position.x = (i - (numStrings - 1) / 2) * spacing;
+        guiterString.position.y = bodyParams.height / 2;
+        guiterString.position.z = neckParams.depth + 0.1;
+        guiterGroup.add(guiterString);
+      }
 
       // ライト
       const ambientLightParams = {
@@ -908,19 +640,7 @@ export default function Home() {
         directionalLightParams.color,
         directionalLightParams.intensity
       );
-      directionalLight.position.set(0, -1, 2);
-      directionalLight.castShadow = true;
-
-      directionalLight.shadow.mapSize.width = 1024;
-      directionalLight.shadow.mapSize.height = 1024;
-
-      // 影の生成範囲を制御
-      directionalLight.shadow.camera.top = 2;
-      directionalLight.shadow.camera.right = 3;
-      directionalLight.shadow.camera.bottom = -2;
-      directionalLight.shadow.camera.left = -3;
-      directionalLight.shadow.camera.near = 0.7;
-      directionalLight.shadow.camera.far = 4;
+      directionalLight.position.set(10, 15, 15);
 
       scene.add(ambientLight, directionalLight);
 
@@ -940,9 +660,28 @@ export default function Home() {
       scene.add(directionalLighCameratHelper);
 
       // directionalLight
-      const directionalLightDebugUI = gui.addFolder("directionalLight");
+      const directionalLightFolder = gui.addFolder("directionalLight");
 
-      const helperFolder = directionalLightDebugUI.addFolder("ヘルパー");
+      directionalLightFolder
+        .add(directionalLight.position, "x")
+        .min(-10)
+        .max(10)
+        .step(0.01)
+        .name("x");
+      directionalLightFolder
+        .add(directionalLight.position, "y")
+        .min(-10)
+        .max(10)
+        .step(0.01)
+        .name("y");
+      directionalLightFolder
+        .add(directionalLight.position, "z")
+        .min(-10)
+        .max(10)
+        .step(0.01)
+        .name("z");
+
+      const helperFolder = directionalLightFolder.addFolder("ヘルパー");
       helperFolder.close();
       helperFolder
         .add(directionalLighCameratHelper, "visible")
@@ -951,10 +690,7 @@ export default function Home() {
         .add(directionalLightHelper, "visible")
         .name("ライトヘルパー");
 
-      // デバッグUIの表示切り替え
-      window.addEventListener("keydown", (event) => {
-        event.key === "," ? gui.show(gui._hidden) : "";
-      });
+      directionalLightFolder.close();
 
       // Sizes
       const sizes = {
@@ -987,8 +723,33 @@ export default function Home() {
         100
       );
 
-      camera.position.z = 10;
+      camera.position.y = 6;
+      camera.position.z = 12;
+
+      // camera.rotation.x = -Math.PI / 4
       scene.add(camera);
+
+      const cameraFoloder = gui.addFolder("カメラの位置");
+      cameraFoloder
+        .add(camera.position, "x")
+        .min(-15)
+        .max(15)
+        .step(0.01)
+        .name("x");
+      cameraFoloder
+        .add(camera.position, "y")
+        .min(-15)
+        .max(15)
+        .step(0.01)
+        .name("y");
+      cameraFoloder
+        .add(camera.position, "z")
+        .min(-15)
+        .max(15)
+        .step(0.01)
+        .name("z");
+
+      cameraFoloder.close();
 
       // Contorols
       const controls = new OrbitControls(camera, canvas);
@@ -1007,6 +768,27 @@ export default function Home() {
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFShadowMap;
 
+      directionalLight.castShadow = true;
+      body.castShadow = true;
+      neck.castShadow = true;
+      head.castShadow = true;
+
+      directionalLight.shadow.mapSize.width = 512;
+      directionalLight.shadow.mapSize.height = 512;
+
+      // 影の生成範囲を制御
+      directionalLight.shadow.camera.top = 6;
+      directionalLight.shadow.camera.right = 6;
+      directionalLight.shadow.camera.bottom = -6;
+      directionalLight.shadow.camera.left = -6;
+      directionalLight.shadow.camera.near = 1;
+      directionalLight.shadow.camera.far = 30;
+
+      floor.receiveShadow = true;
+      wall.receiveShadow = true;
+      body.receiveShadow = true;
+      head.receiveShadow = true;
+
       // ループアニメーション
       const timer = new Timer();
 
@@ -1016,7 +798,9 @@ export default function Home() {
 
         // タイマー
         timer.update();
-        const elapsedTime = timer.getElapsed();
+        const elapsedTime = timer.getElapsed() * 0.5;
+
+        guiterGroup.rotation.y = elapsedTime;
 
         requestAnimationFrame(animetion);
       };
